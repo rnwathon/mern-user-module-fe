@@ -6,6 +6,7 @@ import {
   Form,
   FormGroup,
   Input,
+  CustomInput,
   Label,
   Button,
   Card,
@@ -18,6 +19,10 @@ import Swal from 'sweetalert2';
 
 class AddUser extends React.Component {
   state = {
+    image: {
+      value: "",
+      file: null
+    },
     fullname: "",
     email: "",
     password: "",
@@ -32,9 +37,28 @@ class AddUser extends React.Component {
     })
   }
 
+  handleFileOnChange = (e) => {
+    e.preventDefault();
+
+    this.setState({
+      image: {
+        value: e.target.value,
+        file: e.target.files[0]
+      }
+    })
+  }
+
   handleSubmit = (e) => {
     e.preventDefault();
     let token = localStorage.getItem('token')
+
+    // Declare form Data
+    let formData = new FormData()
+    // Masukin key:value ke form data
+    formData.append("fullname", this.state.fullname)
+    formData.append("email", this.state.email)
+    formData.append("password", this.state.password)
+    formData.append("image", this.state.image.file)
 
     if(!token){
       this.props.history.replace('/login')
@@ -46,11 +70,7 @@ class AddUser extends React.Component {
         headers: {
           Authorization: token
         },
-        data: {
-          fullname: this.state.fullname,
-          email: this.state.email,
-          password: this.state.password
-        }
+        data: formData
       })
       .then(res => {
         this.setState({ loading: false })
@@ -77,6 +97,7 @@ class AddUser extends React.Component {
   }
 
   render(){
+    console.log(this.state)
     return(
       <Container>
         <Row style={{height: "100vh"}} className="align-items-center">
@@ -85,6 +106,10 @@ class AddUser extends React.Component {
               <CardTitle className="display-4 text-center mt-3">Add User</CardTitle>
               <CardBody>
                 <Form>
+                  <FormGroup>
+                    <Label for="exampleCustomFileBrowser">File Browser</Label>
+                    <CustomInput type="file" id="exampleCustomFileBrowser" name="customFile" onChange={this.handleFileOnChange}/>
+                  </FormGroup>
                   <FormGroup>
                     <Label for="fullname">Full Name</Label>
                     <Input type="text" id="fullname" placeholder="enter user fullname" value={this.state.fullname} onChange={this.handleOnChange}/>

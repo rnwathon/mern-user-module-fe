@@ -9,6 +9,7 @@ import {
   Label,
   Button,
   Card,
+  CardImg,
   CardBody,
   CardTitle,
   CardFooter,
@@ -116,6 +117,8 @@ class User extends React.Component {
         this.state.users.map((user, idx) => {
           return(
             <Card key={idx} className="p-4 mb-2">
+              {user.imagePath && 
+              <CardImg top width="50%" src={user.imagePath} alt="Card image cap" />}
               <CardTitle className="display-4 text-center">{user.fullname}</CardTitle>
               <CardBody className="text-center">{user.email}</CardBody>
               <CardFooter className="text-center">
