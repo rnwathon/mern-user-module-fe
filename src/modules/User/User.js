@@ -11,6 +11,7 @@ import {
   Card,
   CardBody,
   CardTitle,
+  CardFooter,
   Spinner
 } from 'reactstrap';
 import axios from 'axios';
@@ -23,6 +24,10 @@ class User extends React.Component {
   }
 
   componentDidMount(){
+    this.handleGetuser();
+  }
+
+  handleGetuser = () => {
     let token = localStorage.getItem("token");
 
     if(token){
@@ -54,6 +59,33 @@ class User extends React.Component {
     this.props.history.push("/addUser")
   }
 
+  handleDelete = (e, id) => {
+    e.preventDefault()
+    let token = localStorage.getItem('token');
+    let hapus = window.confirm("Apakah anda yakin?");
+
+    if(hapus){
+      axios({
+        method: "DELETE",
+        url: "http://localhost:3030/api/v1/user/",
+        headers: {
+          Authorization: token
+        },
+        data: {
+          id: id
+        }
+      })
+      .then(res => {
+        if(res.data.success){
+          this.handleGetuser()
+        }
+      })
+      .catch(err => {
+        window.alert(err)
+      })
+    }
+  }
+
   handleLogout = (e) => {
     e.preventDefault()
     localStorage.removeItem("token");
@@ -61,6 +93,7 @@ class User extends React.Component {
   }
 
   render(){
+    console.log(this.state.users)
     return(
       <Container>
         <h1>Daftar User</h1>
@@ -85,6 +118,26 @@ class User extends React.Component {
             <Card key={idx} className="p-4 mb-2">
               <CardTitle className="display-4 text-center">{user.fullname}</CardTitle>
               <CardBody className="text-center">{user.email}</CardBody>
+              <CardFooter className="text-center">
+                <Button 
+                  color="info mx-2"
+                  onClick={() => {
+                    this.props.history.push({
+                      pathname: '/editUser',
+                      state: {
+                        id: user._id
+                      }
+                    })
+                  }}
+                  >
+                    Edit
+                </Button>
+                <Button 
+                  color="danger mx-2"
+                  onClick={(e) => {this.handleDelete(e, user._id)}}
+                  >Delete
+                </Button>
+              </CardFooter>
             </Card>
           )
         })

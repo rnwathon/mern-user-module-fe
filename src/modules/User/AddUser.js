@@ -36,40 +36,44 @@ class AddUser extends React.Component {
     e.preventDefault();
     let token = localStorage.getItem('token')
 
-    this.setState({ loading: true })
-    axios({
-      method: "POST",
-      url: "http://localhost:3030/api/v1/user/",
-      headers: {
-        Authorization: token
-      },
-      data: {
-        fullname: this.state.fullname,
-        email: this.state.email,
-        password: this.state.password
-      }
-    })
-    .then(res => {
-      this.setState({ loading: false })
-
-      if(res.data.success){
-        Swal.fire({
-          icon: 'success',
-          text: 'user berhasil ditambahkan!'
-        })
-        .then(() => {
-          this.props.history.replace("/")
-        })
-      }
-    })
-    .catch(err => {
-      this.setState({ loading: false })
-
-      Swal.fire({
-        icon: 'error',
-        text: err.response.data.message
+    if(!token){
+      this.props.history.replace('/login')
+    }else{
+      this.setState({ loading: true })
+      axios({
+        method: "POST",
+        url: "http://localhost:3030/api/v1/user/",
+        headers: {
+          Authorization: token
+        },
+        data: {
+          fullname: this.state.fullname,
+          email: this.state.email,
+          password: this.state.password
+        }
       })
-    })
+      .then(res => {
+        this.setState({ loading: false })
+
+        if(res.data.success){
+          Swal.fire({
+            icon: 'success',
+            text: 'user berhasil ditambahkan!'
+          })
+          .then(() => {
+            this.props.history.replace("/")
+          })
+        }
+      })
+      .catch(err => {
+        this.setState({ loading: false })
+
+        Swal.fire({
+          icon: 'error',
+          text: err.response.data.message
+        })
+      })
+    }
   }
 
   render(){
